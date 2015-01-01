@@ -99,13 +99,13 @@ class SQLObject
   end
 
   def update
-    set_clause = self.class.columns.map { |col_name| "#{col_name} = ?"}.join(", ")
+    set_conditions = self.class.columns.map { |col_name| "#{col_name} = ?"}.join(", ")
 
     DBConnection.execute(<<-SQL, *attribute_values, self.id)
       UPDATE
         #{self.class.table_name}
       SET
-        #{set_clause}
+        #{set_conditions}
       WHERE
         id = ?
     SQL
