@@ -23,6 +23,8 @@ class BelongsToOptions < AssocOptions
     @class_name = options[:class_name] || name.to_s.classify
     @foreign_key = options[:foreign_key] || name.to_s.foreign_key.to_sym
     @primary_key = options[:primary_key] || :id
+
+    assoc_options[name] = self
   end
 end
 
@@ -56,7 +58,7 @@ module Associatable
   end
 
   def assoc_options
-    # Wait to implement this in Phase IVa. Modify `belongs_to`, too.
+    @assoc_options || @assoc_options = {}
   end
 end
 
