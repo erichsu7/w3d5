@@ -23,8 +23,6 @@ class BelongsToOptions < AssocOptions
     @class_name = options[:class_name] || name.to_s.classify
     @foreign_key = options[:foreign_key] || name.to_s.foreign_key.to_sym
     @primary_key = options[:primary_key] || :id
-
-    assoc_options[name] = self
   end
 end
 
@@ -39,11 +37,16 @@ end
 module Associatable
   # Phase IIIb
   def belongs_to(name, options = {})
-    options = BelongsToOptions.new(name, options)
+    self.assoc_options[name] = BelongsToOptions.new(name, options)
 
     define_method(name) do
+      options = self.class.assoc_options[name]
+
       foreign_key_value = self.send(options.foreign_key)
-      options.model_class.where({ options.primary_key => foreign_key_value }).first
+      options
+        .model_class
+        .where({ options.primary_key => foreign_key_value })
+        .first
     end
   end
 
@@ -53,7 +56,9 @@ module Associatable
 
     define_method(name) do
       primary_key_value = self.send(options.primary_key)
-      options.model_class.where({ options.foreign_key => primary_key_value })
+      options
+        .model_class
+        .where({ options.foreign_key => primary_key_value })
     end
   end
 
